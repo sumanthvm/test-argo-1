@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-router
+  namespace: {{.Values.operator.namespace}} 
+  labels:
+    app: mysql-router
+  annotations:
+   "helm.sh/hook": "post-install"
+   "helm.sh/hook-weight": "15"
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mysql-router
+  template:
+    metadata:
+      labels:
+        app: mysql-router
+    spec:
+      serviceAccountName: mysql-resources
+      containers:
+      - name: mysqlrouter
+        image: us.icr.io/msil_gen2_connect_dev/mysql-router:8.0.19
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: root-password
+              key: password
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_HOST
+          value: mysql-innodb-0.mysql-innodb
+        - name: MYSQL_INNODB_NUM_MEMBERS
+          value: "3"
+        command:
+        - "/bin/bash"
+        - "-cx"
+        - "exec /run.sh mysqlrouter"
+        ports:
+        - containerPort: 6446
+          containerPort: 6447
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-router
+  namespace: {{.Values.operator.namespace}}
+  labels:
+    app: mysql-router
+spec:
+  ports:
+    - port: 3306
+      targetPort: 6446
+      protocol: TCP
+      name: 3306-tcp
+    - port: 3307
+      targetPort: 6447
+      protocol: TCP
+      name: 3307-tcp
+  selector:
+    app: mysql-router
+  type: {{.Values.router.serviceType}}
+

@@ -1,0 +1,5 @@
+Thanks for installing the MySQL Operator, MySQL Innodb Cluster, MySql Router, MEM, Liquibase
+
+Check if the mentioned mysql resources are running with
+
+kubectl -n {{.Values.operator.namespace}} get po

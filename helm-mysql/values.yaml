@@ -1,0 +1,18 @@
+rbac:
+  enabled: true
+operator:
+  namespace: mysql
+  global: false
+  register_crd: true
+image:
+  registry: us.icr.io/msil_gen2_connect_dev/mysql-operator
+  tag: 0.3.0
+  pullPolicy: IfNotPresent
+innodb:
+  clusterName: mysql-innodb
+  replicas: 3
+  version: 8.0.17  ### ( this image tag should be present in the repo from where we are pulling innodb image )
+  storageclass: mysql-sc
+  pvAccess: ReadWriteOnce 
+router:
+  serviceType: LoadBalancer 
