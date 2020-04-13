@@ -1,0 +1,49 @@
+rbac:
+  enabled: true
+resources:
+  namespace: mysql
+  rbacName: mysql-resources
+hooks:
+  customresources: crd-install
+  firstPriority: pre-install
+  lastPriority: post-install
+imagepullCredentials:
+  secretName: icr-secret
+  registry: us.icr.io
+  username: iamapikey
+  password: mUN5OKR0tHLf7LgiFHtLZ8nh8XamXnJ7_IS46j0yb1cl
+operator:
+  global: false
+  register_crd: true
+  configFile: mysql-operator-config
+  image:
+    repository: us.icr.io/msil_gen2_connect_dev/mysql-operator
+    tag: 0.3.0
+    pullPolicy: IfNotPresent
+innodb:
+  clusterName: mysql-innodb
+  replicas: 3
+  image:
+    repository: us.icr.io/msil_gen2_connect_dev/mysql-innodb
+    tag: 8.0.17
+  rootUser:
+    secretName: root-password
+    password: foobar
+  configMycnf: innodb-mycnf
+  claimName:
+    data: pvcdata
+    backup: pvcbackup
+  storageclass: mysql-sc
+  pvAccess: ReadWriteOnce 
+  storagesize: 20Gi
+agent:
+  image:
+    repository: avashkumar/mysql-agent
+    tag: 0.3.0
+router:
+  image:
+    repository: us.icr.io/msil_gen2_connect_dev/mysql-router
+    tag: 8.0.19
+  serviceType: LoadBalancer
+
+ 

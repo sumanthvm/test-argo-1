@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.operator.configFile }}
+  namespace: {{ .Values.resources.namespace }}
+  labels:
+    app: mysql-operator
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+data:
+  mysql-operator-config.yaml: |
+    images:
+      mysqlServer: {{ .Values.innodb.image.repository }}
+      mysqlAgent: {{ .Values.agent.image.repository }}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.innodb.configMycnf }}
+  namespace: {{ .Values.resources.namespace }}
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+data:
+  my.cnf: |-
+    [mysqld]
+    skip-host-cache
+    skip-name-resolve
+    datadir=/var/lib/mysql
+    socket=/var/lib/mysql/mysql.sock
+    secure-file-priv=/var/lib/mysql-files
+    user=mysql
+
+    pid-file=/var/run/mysqld/mysqld.pid
+    early-plugin-load = keyring_file.so
+    keyring_file_data = /var/lib/mysql/mysql_keyring/keyring
+
+    innodb_buffer_pool_size=12884901888
+    max_connections=1000
+    default-time-zone='+05:30'
+
+

@@ -1,0 +1,39 @@
+apiVersion: mysql.oracle.com/v1alpha1
+kind: Cluster
+metadata:
+  name: {{ .Values.innodb.clusterName }}
+  namespace: {{ .Values.resources.namespace }}
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+  annotations:
+    "helm.sh/hook": "{{ .Values.hooks.lastPriority }}"
+    "helm.sh/hook-weight": "10"
+spec:
+  members: {{ .Values.innodb.replicas }}
+  rootPasswordSecret: 
+    name: {{ .Values.innodb.rootUser.secretName }}
+  version: {{ .Values.innodb.image.tag }}           
+  config:                                
+    name: {{ .Values.innodb.configMycnf }}
+  volumeClaimTemplate:
+    metadata:
+      name: {{ .Values.innodb.claimName.data }}
+    spec:
+      storageClassName: {{ .Values.innodb.storageclass }}
+      accessModes:
+        - {{ .Values.innodb.pvAccess }}
+      resources:
+        requests:
+          storage: {{ .Values.innodb.storagesize }}
+  backupVolumeClaimTemplate:
+    metadata:
+      name: {{ .Values.innodb.claimName.backup }}
+    spec:
+      storageClassName: {{ .Values.innodb.storageclass }}
+      accessModes:
+        - {{ .Values.innodb.pvAccess }}
+      resources:
+        requests:
+          storage: {{ .Values.innodb.storagesize }}
+

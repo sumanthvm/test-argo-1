@@ -1,0 +1,7 @@
+apiVersion: v1
+name: mysql-innodb
+version: 1.0.0
+description: A Helm chart for deploying the Oracle MySQL Operator, MySQL Innodb Cluster, MySQL Router, MEM, Liquibase
+maintainers:
+  - name: Avash Kumar
+    email: avaskum1@in.ibm.com
