@@ -40,5 +40,6 @@ data:
     innodb_buffer_pool_size=12884901888
     max_connections=1000
     default-time-zone='+05:30'
+    tmp_table_size=16777216
 
 
